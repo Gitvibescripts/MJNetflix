@@ -1,0 +1,96 @@
+import { Play, Star, Trash2, Bookmark, Film, Tv } from "lucide-react";
+import type { WatchlistItem } from "@/types";
+import Poster from "@/components/Poster";
+
+interface WatchlistViewProps {
+  items: WatchlistItem[];
+  onPlay: (item: WatchlistItem) => void;
+  onRemove: (id: string) => void;
+}
+
+export default function WatchlistView({
+  items,
+  onPlay,
+  onRemove,
+}: WatchlistViewProps) {
+  if (items.length === 0) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 pt-24 pb-12">
+        <div className="w-20 h-20 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center mb-6">
+          <Bookmark className="w-10 h-10 text-gray-600" />
+        </div>
+        <h2 className="text-white text-2xl font-bold mb-2">Your list is empty</h2>
+        <p className="text-gray-400 text-center max-w-md">
+          Browse the catalog and tap the bookmark icon to save movies and shows
+          you want to watch later.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-24 pb-12 px-4 md:px-8 lg:px-12">
+      <h1 className="text-white text-2xl md:text-3xl font-bold mb-1">My List</h1>
+      <p className="text-gray-400 text-sm mb-6">
+        {items.length} {items.length === 1 ? "title" : "titles"} saved
+      </p>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="group relative rounded-lg overflow-hidden bg-[#141414] cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-black/80"
+            onClick={() => onPlay(item)}
+          >
+            <div className="aspect-[2/3] relative">
+              <Poster
+                title={item.title}
+                poster={item.poster}
+                alt={item.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+              {/* Badges */}
+              <div className="absolute top-2 left-2">
+                <span className="bg-red-600/90 text-white text-[10px] font-bold uppercase px-1.5 py-0.5 rounded flex items-center gap-1">
+                  {item.type === "movie" ? (
+                    <Film className="w-3 h-3" />
+                  ) : (
+                    <Tv className="w-3 h-3" />
+                  )}
+                  {item.type === "movie" ? "Movie" : "TV"}
+                </span>
+              </div>
+
+              {/* Remove button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(item.id);
+                }}
+                className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-black/70 hover:bg-red-600 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+
+              {/* Play on hover */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-6 h-6 fill-black text-black" />
+                </div>
+              </div>
+
+              {/* Bottom info */}
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <h3 className="text-white text-sm font-bold truncate">
+                  {item.title}
+                </h3>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
